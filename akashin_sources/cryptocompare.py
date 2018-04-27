@@ -22,6 +22,7 @@ class Source(source.Source):
     def get_historical_price(self, ticker, date):
         commodity, currency = ticker.split(':')
         trade_date = datetime.combine(date, datetime.max.time())
+        trade_date = trade_date.replace(tzinfo=pytz.UTC)
         ts = int(time.mktime(trade_date.timetuple()))
         url = 'https://min-api.cryptocompare.com/data/pricehistorical?fsym={}&tsyms={}&ts={}'.format(commodity, currency, ts)
         logging.info("Fetching %s", url)
