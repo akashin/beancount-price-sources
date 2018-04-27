@@ -4,12 +4,17 @@ import time
 import logging
 import json
 from datetime import datetime
+import pytz
 from urllib import error
 from math import log10, floor
 
 from beancount.core.number import D
 from beancount.prices import source
 from beancount.utils import net_utils
+
+"""
+bean-price -e 'GBP:akashin_sources.cryptocompare/BTC:GBP'
+"""
 
 class Source(source.Source):
     "CryptoCompare API price extractor."
@@ -46,4 +51,5 @@ class Source(source.Source):
             return None
         price = D(response[currency]).quantize(D('1.000000000000000000'))
         trade_date = datetime.now()
+        trade_date = trade_date.replace(tzinfo=pytz.UTC)
         return source.SourcePrice(D('0') if price == 0 else price, trade_date, currency)

@@ -2,6 +2,7 @@
 """
 
 import datetime
+import pytz
 import logging
 import re
 import json
@@ -14,9 +15,7 @@ from beancount.prices import source
 from beancount.utils import net_utils
 
 """
-bean-price -e 'USD:morningstar/etfs:ARCX:GSLC'
-bean-price -e 'USD:morningstar/stocks:NYSE:GE'
-bean-price -e 'AUD:morningstar/etfs:XASX:VEU'
+bean-price -e 'GBP:akashin_sources.ft/19753923'
 """
 
 
@@ -99,7 +98,8 @@ class Source(source.Source):
             entries = soup.find_all('td')
             trade_date = entries[0].find_all('span')[0].contents[0]
             trade_date = datetime.datetime.strptime(trade_date, '%A, %B %d, %Y')
-            price = D(entries[1].contents[0])
+            trade_date = trade_date.replace(tzinfo=pytz.UTC)
+            price = D(entries[4].contents[0])
 
             return source.SourcePrice(price, trade_date, None)
         except:
